@@ -45,7 +45,6 @@ func increasingWithDampner(input []int) bool {
 }
 
 func decreasing(input []int) bool {
-	fmt.Printf("Determining Dec on array %v\n", input)
 	for i := 0; i < len(input)-1; i++ {
 		if input[i] < input[i+1] {
 			return false
@@ -65,21 +64,43 @@ func decreasing(input []int) bool {
 func decreasingWithDampner(input []int) bool {
 	for i := 0; i < len(input)-1; i++ {
 		if input[i] < input[i+1] {
-			fmt.Printf("Using Dec Dampner on array %v\n", input)
 			return decreasing(append(input[:i+1], input[i+2:]...))
 		}
 
 		if input[i] == input[i+1] {
-			fmt.Printf("Using Dec Dampner on array %v\n", input)
 			return decreasing(append(input[:i+1], input[i+2:]...))
 		}
 
 		if (input[i] - input[i+1]) > maxChange {
-			fmt.Printf("Using Dec Dampner on array %v\n", input)
 			return decreasing(append(input[:i+1], input[i+2:]...))
 		}
 	}
 	return true
+}
+
+func assessReport(input []int, allowedErrors int) bool {
+	isSafe := false
+	if input[0] > input[1] {
+		isSafe = decreasing(input)
+	} else {
+		isSafe = increasing(input)
+	}
+
+	if allowedErrors > 0 && isSafe == false {
+		for i := range input {
+			tmp := []int{}
+			tmp = append(tmp, input[:i]...)
+			tmp = append(tmp, input[i+1:]...)
+			// if any variant of the report is safe (true) then return
+			if assessReport(tmp, allowedErrors-1) {
+				return true
+			}
+		}
+		return isSafe
+	} else {
+		return isSafe
+	}
+
 }
 
 func splitLine(inputLine string) []int {
@@ -107,25 +128,12 @@ func main() {
 
 	for scanner.Scan() {
 		line := splitLine(scanner.Text())
-		isSafe := false
-		if line[0] > line[1] {
-			isSafe = decreasing(line)
-		} else {
-			isSafe = increasing(line)
-		}
+		isSafe := assessReport(line, 0)
 		if isSafe {
 			safeReports += 1
 		}
 
-		isSafe2 := false
-		if line[0] > line[1] {
-			isSafe2 = decreasingWithDampner(line)
-			fmt.Printf("Result: %v\n", isSafe)
-			fmt.Printf("Result2: %v\n", isSafe2)
-		} else {
-			isSafe2 = increasingWithDampner(line)
-		}
-
+		isSafe2 := assessReport(line, 1)
 		if isSafe2 {
 			safeReports2 += 1
 		}

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 )
 
 // test data names correct for Part 2 expectations
+// taken from the advent of code example
 var safeDec []int = []int{7, 6, 4, 2, 1}
 var unsafeInc []int = []int{1, 2, 7, 8, 9}
 var unsafeDec []int = []int{9, 7, 6, 2, 1}
@@ -46,15 +46,4 @@ func TestIncreasingDampner(t *testing.T) {
 	if testResult == false {
 		t.Fail()
 	}
-}
-
-func TestWithRealData(t *testing.T) {
-	testData := []int{85, 81, 78, 77, 76, 72, 71, 69}
-	rawResult := decreasing(testData)
-	fmt.Printf("Raw Result: %v\n", rawResult)
-	dampResult := decreasingWithDampner(testData)
-	fmt.Printf("Dampner Result: %v\n", dampResult)
-	myResult := decreasing([]int{81, 78, 77, 76, 72, 71, 69})
-	fmt.Printf("My Result: %v\n", myResult)
-	t.Fail()
 }
