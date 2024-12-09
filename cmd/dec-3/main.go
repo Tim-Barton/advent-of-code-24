@@ -30,15 +30,67 @@ func handleLine(input string) int {
 	return commandTotal
 }
 
+func handleLine2(input string, mulEnabled bool) (int, bool) {
+	fmt.Println("New Line")
+	pattern := regexp.MustCompile(`mul\((\d{1,3}),(\d{1,3})\)`)
+	dontString := "don't()"
+	doString := "do()"
+	maxMulString := "mul(123,456)"
+	commandTotal := 0
+	for inputIndex := 0; inputIndex < len(input); inputIndex++ {
+		if mulEnabled {
+			switch input[inputIndex] {
+			case 'm':
+				endIndex := inputIndex + len(maxMulString)
+				if endIndex > len(input) {
+					endIndex = len(input)
+				}
+
+				substr := input[inputIndex:endIndex]
+				match := pattern.FindString(substr)
+				if match != "" {
+					fmt.Printf("Match: %s\n", match)
+					num1, num2 := splitcommand(match)
+					commandTotal += (num1 * num2)
+					inputIndex += len(match) - 1
+				}
+				continue
+			case 'd':
+				substr := input[inputIndex : inputIndex+len(dontString)]
+				if substr == dontString {
+					fmt.Println("Disabled")
+					mulEnabled = false
+					inputIndex += len(dontString) - 1
+					continue
+				}
+
+			}
+		} else {
+			switch input[inputIndex] {
+			case 'd':
+				substr := input[inputIndex : inputIndex+len(doString)]
+				if substr == doString {
+					fmt.Println("Enabled")
+					mulEnabled = true
+					inputIndex += len(doString) - 1
+					continue
+				}
+			}
+		}
+	}
+	return commandTotal, mulEnabled
+}
+
 func main() {
 	input, _ := os.Open("input")
 	scanner := bufio.NewScanner(input)
 	scanner.Split(bufio.ScanLines)
 
-	documentTotal := 0
+	documentTotal, lineTotal := 0, 0
+	enabled := true
 	for scanner.Scan() {
 		line := scanner.Text()
-		lineTotal := handleLine(line)
+		lineTotal, enabled = handleLine2(line, enabled)
 		documentTotal += lineTotal
 	}
 

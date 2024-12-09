@@ -25,3 +25,14 @@ func TestHandleline(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestHandleline2(t *testing.T) {
+	// from the question details as provided correct example
+	testData := "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
+	expectedValue := 48
+	returnValue, _ := handleLine2(testData, true)
+
+	if returnValue != expectedValue {
+		t.Fail()
+	}
+}
