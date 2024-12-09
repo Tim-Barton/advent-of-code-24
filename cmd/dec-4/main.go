@@ -127,6 +127,48 @@ func checkInput(input []string) int {
 	return simplecount + complexCount
 }
 
+func xMasCheck(input []string, wait *sync.WaitGroup, output chan []string) {
+	for y := 0; y < len(input)-2; y++ {
+		for x := 0; x < len(input[y])-2; x++ {
+			word := string(input[y][x]) +
+				string(input[y+1][x+1]) +
+				string(input[y+2][x+2])
+			word2 := string(input[y][x+2]) +
+				string(input[y+1][x+1]) +
+				string(input[y+2][x])
+			output <- []string{word, word2}
+		}
+	}
+	wait.Done()
+}
+
+func checkInput2(input []string) int {
+	wait := sync.WaitGroup{}
+
+	assessChannel := make(chan []string)
+
+	wait.Add(1)
+	go xMasCheck(input, &wait, assessChannel)
+
+	complexCount := 0
+	assess := sync.WaitGroup{}
+	assess.Add(1)
+	go func() {
+		for words := range assessChannel {
+			if (words[0] == "MAS" || words[0] == "SAM") && (words[1] == "MAS" || words[1] == "SAM") {
+				complexCount += 1
+			}
+		}
+		assess.Done()
+	}()
+
+	wait.Wait()
+	close(assessChannel)
+	assess.Wait()
+	fmt.Printf("Results. X-Mas: %d\n", complexCount)
+	return complexCount
+}
+
 func main() {
 	input, _ := os.Open("input")
 	scanner := bufio.NewScanner(input)
@@ -139,7 +181,9 @@ func main() {
 	}
 
 	count := checkInput(data)
+	count2 := checkInput2(data)
 
 	fmt.Println(count)
+	fmt.Println(count2)
 
 }
