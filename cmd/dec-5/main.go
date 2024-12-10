@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -40,6 +41,24 @@ func assessRule(printOrder []string, rule Rule) bool {
 	return true
 }
 
+func fixOrder(printOrder []string, rules []Rule) []string {
+	fmt.Println(printOrder)
+	for !assessRules(printOrder, rules) {
+		for i := range rules {
+			correct := assessRule(printOrder, rules[i])
+			if !correct {
+				firstIndex := slices.Index(printOrder, rules[i].first)
+				secondIndex := slices.Index(printOrder, rules[i].second)
+				printOrder = slices.Delete(printOrder, firstIndex, firstIndex+1)
+				printOrder = slices.Insert(printOrder, secondIndex, rules[i].first)
+				fmt.Println(printOrder)
+			}
+		}
+	}
+
+	return printOrder
+}
+
 func midNumber(printOrder []string) int {
 
 	midPoint := (len(printOrder) / 2)
@@ -69,12 +88,17 @@ func main() {
 		}
 	}
 
-	total := 0
+	goodTotal := 0
+	correctedTotal := 0
 	for i := range prints {
 		if assessRules(prints[i], rules) {
-			total += midNumber(prints[i])
+			goodTotal += midNumber(prints[i])
+		} else {
+			newOrder := fixOrder(prints[i], rules)
+			correctedTotal += midNumber(newOrder)
 		}
 	}
 
-	fmt.Println(total)
+	fmt.Println(goodTotal)
+	fmt.Println(correctedTotal)
 }
