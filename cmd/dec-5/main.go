@@ -42,7 +42,6 @@ func assessRule(printOrder []string, rule Rule) bool {
 }
 
 func fixOrder(printOrder []string, rules []Rule) []string {
-	fmt.Println(printOrder)
 	for !assessRules(printOrder, rules) {
 		for i := range rules {
 			correct := assessRule(printOrder, rules[i])
@@ -51,7 +50,6 @@ func fixOrder(printOrder []string, rules []Rule) []string {
 				secondIndex := slices.Index(printOrder, rules[i].second)
 				printOrder = slices.Delete(printOrder, firstIndex, firstIndex+1)
 				printOrder = slices.Insert(printOrder, secondIndex, rules[i].first)
-				fmt.Println(printOrder)
 			}
 		}
 	}
