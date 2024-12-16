@@ -2,7 +2,6 @@ package main
 
 import "fmt"
 
-
 type Direction int
 
 const (
@@ -80,4 +79,28 @@ func (g *Guard) Patrol(lab Lab) {
 			g.stepHistory[stepIndex] = nil
 		}
 	}
+}
+
+type DoubleStepperGuard struct {
+	Guard
+}
+
+func NewDoubleStepper(g Guard) DoubleStepperGuard {
+	return DoubleStepperGuard{Guard{x: g.x,
+		y:           g.y,
+		direction:   g.direction,
+		stepHistory: make(map[string]interface{}),
+	}}
+}
+
+func (dsg *DoubleStepperGuard) PatrolStep(l Lab) bool {
+	step := dsg.Guard.PatrolStep(l)
+	if !step {
+		return step
+	}
+	return dsg.Guard.PatrolStep(l)
+}
+
+func Equals(g Guard, dsg DoubleStepperGuard) bool {
+	return g.x == dsg.x && g.y == dsg.y && g.direction == dsg.direction
 }

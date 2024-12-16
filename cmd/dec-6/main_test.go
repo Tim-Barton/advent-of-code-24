@@ -27,3 +27,26 @@ func TestImportExportLab(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestObstructionFinder(t *testing.T) {
+	testData := "....#.....\n" +
+		".........#\n" +
+		"..........\n" +
+		"..#.......\n" +
+		".......#..\n" +
+		"..........\n" +
+		".#..^.....\n" +
+		"........#.\n" +
+		"#.........\n" +
+		"......#...\n"
+
+	expectedResult := 6
+
+	lab, guard := parseInput(testData)
+	result := FindObstructionPoints(guard, lab)
+
+	if expectedResult != result {
+		fmt.Printf("Expected: %d, Result: %d", expectedResult, result)
+		t.Fail()
+	}
+}
